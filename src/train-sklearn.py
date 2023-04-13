@@ -38,12 +38,30 @@ if __name__ == '__main__':
 	v = DictVectorizer()
 	X_train = v.fit_transform(train_features)
 
+	# regular models
 	if model == "NB":
 		clf = MultinomialNB(alpha=0.01)
 	elif model == "SGD":
 		clf = SGDClassifier(loss='hinge', alpha=0.0001, penalty='l2', max_iter=1000)
 	elif model == "PAC":
 		clf = PassiveAggressiveClassifier(C=0.1)
+
+	# model parameter experimentation
+	#Testing the alpha
+	if model == "NB_1":
+		clf = MultinomialNB(alpha=0.5)
+	elif model == "NB_2":
+		clf = MultinomialNB(alpha=1.0)
+	elif model == "NB_3":
+		clf = MultinomialNB(alpha=2.0)
+	#Testing shuffling the data
+	elif model == "NB_4":
+		clf = MultinomialNB(alpha=0.01, shuffle=True)
+	#Testing with different values of and tol
+	elif model == "NB_5":
+		clf = MultinomialNB(alpha=0.01, tol=0.001)
+	elif model == "NB_6":
+		clf = MultinomialNB(alpha=0.01, tol=0.0001)
 	else:
 		raise ValueError("Invalid model specified")
 
