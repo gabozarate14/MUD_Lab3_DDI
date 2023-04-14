@@ -2,11 +2,9 @@
 
 import sys
 from os import listdir
-
 from xml.dom.minidom import parse
-
 from deptree import *
-
+from util import experiments as exp
 
 # Function that builds the path elements using the parameters in terms of
 # lemma, relations, tags (PoS) and its combinations
@@ -151,36 +149,9 @@ def extract_features(tree, entities, e1, e2, exec_params):
 ## -- Extracts feature vectors for DD interaction pairs from all XML files in target-dir
 ## --
 
-ext_feat_exps = [
-    # Path experiment
-    {"lib": True, "wib": True, "lpib": True, "eib": True, "eib_lemma": True, "ent_types": True, "path": "L", "lpre": False, "wpre": False, "lppre": False, "lpost": False, "wpost": False, "lppost": False},
-    {"lib": True, "wib": True, "lpib": True, "eib": True, "eib_lemma": True, "ent_types": True, "path": "R", "lpre": False, "wpre": False, "lppre": False, "lpost": False, "wpost": False, "lppost": False},
-    {"lib": True, "wib": True, "lpib": True, "eib": True, "eib_lemma": True, "ent_types": True, "path": "T", "lpre": False, "wpre": False, "lppre": False, "lpost": False, "wpost": False, "lppost": False},
-    {"lib": True, "wib": True, "lpib": True, "eib": True, "eib_lemma": True, "ent_types": True, "path": "LR", "lpre": False, "wpre": False, "lppre": False, "lpost": False, "wpost": False, "lppost": False},
-    {"lib": True, "wib": True, "lpib": True, "eib": True, "eib_lemma": True, "ent_types": True, "path": "RT", "lpre": False, "wpre": False, "lppre": False, "lpost": False, "wpost": False, "lppost": False},
-    {"lib": True, "wib": True, "lpib": True, "eib": True, "eib_lemma": True, "ent_types": True, "path": "LT", "lpre": False, "wpre": False, "lppre": False, "lpost": False, "wpost": False, "lppost": False},
-    {"lib": True, "wib": True, "lpib": True, "eib": True, "eib_lemma": True, "ent_types": True, "path": "LRT", "lpre": False, "wpre": False, "lppre": False, "lpost": False, "wpost": False, "lppost": False},
-    # Other features test (including only between)
-    {"lib": False, "wib": True, "lpib": True, "eib": True, "eib_lemma": True, "ent_types": True, "path": "R", "lpre": False, "wpre": False, "lppre": False, "lpost": False, "wpost": False, "lppost": False},
-    {"lib": True, "wib": False, "lpib": True, "eib": True, "eib_lemma": True, "ent_types": True, "path": "R", "lpre": False, "wpre": False, "lppre": False, "lpost": False, "wpost": False, "lppost": False},
-    {"lib": True, "wib": True, "lpib": False, "eib": True, "eib_lemma": True, "ent_types": True, "path": "R", "lpre": False, "wpre": False, "lppre": False, "lpost": False, "wpost": False, "lppost": False},
-    {"lib": True, "wib": True, "lpib": True, "eib": False, "eib_lemma": True, "ent_types": True, "path": "R", "lpre": False, "wpre": False, "lppre": False, "lpost": False, "wpost": False, "lppost": False},
-    {"lib": True, "wib": True, "lpib": True, "eib": True, "eib_lemma": False, "ent_types": True, "path": "R", "lpre": False, "wpre": False, "lppre": False, "lpost": False, "wpost": False, "lppost": False},
-    {"lib": True, "wib": True, "lpib": True, "eib": True, "eib_lemma": True, "ent_types": False, "path": "R", "lpre": False, "wpre": False, "lppre": False, "lpost": False, "wpost": False, "lppost": False},
-    {"lib": True, "wib": True, "lpib": True, "eib": True, "eib_lemma": True, "ent_types": True, "path": None, "lpre": False, "wpre": False, "lppre": False, "lpost": False, "wpost": False, "lppost": False},
-    # Other features test (including previous and posterior)
-    {"lib": True, "wib": True, "lpib": False, "eib": False, "eib_lemma": True, "ent_types": True, "path": "R", "lpre": True, "wpre": False, "lppre": False, "lpost": False, "wpost": False, "lppost": False},
-    {"lib": True, "wib": True, "lpib": False, "eib": False, "eib_lemma": True, "ent_types": True, "path": "R", "lpre": False, "wpre": True, "lppre": False, "lpost": False, "wpost": False, "lppost": False},
-    {"lib": True, "wib": True, "lpib": False, "eib": False, "eib_lemma": True, "ent_types": True, "path": "R", "lpre": False, "wpre": False, "lppre": True, "lpost": False, "wpost": False, "lppost": False},
-    {"lib": True, "wib": True, "lpib": False, "eib": False, "eib_lemma": True, "ent_types": True, "path": "R", "lpre": False, "wpre": False, "lppre": False, "lpost": True, "wpost": False, "lppost": False},
-    {"lib": True, "wib": True, "lpib": False, "eib": False, "eib_lemma": True, "ent_types": True, "path": "R", "lpre": False, "wpre": False, "lppre": False, "lpost": False, "wpost": True, "lppost": False},
-    {"lib": True, "wib": True, "lpib": False, "eib": False, "eib_lemma": True, "ent_types": True, "path": "R", "lpre": False, "wpre": False, "lppre": False, "lpost": False, "wpost": False, "lppost": True},
-    # 1.3 result
-    {"lib": True, "wib": True, "lpib": False, "eib": False, "eib_lemma": True, "ent_types": True, "path": "R", "lpre": True, "wpre": False, "lppre": False, "lpost": True, "wpost": False , "lppost": False},
-    {"lib": True, "wib": True, "lpib": False, "eib": False, "eib_lemma": True, "ent_types": True, "path": "R", "lpre": True, "wpre": False, "lppre": False, "lpost": True, "wpost": True, "lppost": False},
-    {"lib": True, "wib": True, "lpib": False, "eib": False, "eib_lemma": True, "ent_types": True, "path": "R", "lpre": False, "wpre": False, "lppre": True, "lpost": True, "wpost": True, "lppost": False}
+#Extract the feature extraction parameters from the experiments file
+ext_feat_exps = exp.ext_feat_exps
 
-]
 
 if len(sys.argv) < 3:
     print("One parameter of execution is missing")
