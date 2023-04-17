@@ -48,7 +48,7 @@ if __name__ == '__main__':
 
 	# model parameter experimentation
 	#Testing the alpha
-	if model == "NB_1":
+	elif model == "NB_1":
 		clf = MultinomialNB(alpha=0.5)
 	elif model == "NB_2":
 		clf = MultinomialNB(alpha=1.0)
@@ -57,7 +57,7 @@ if __name__ == '__main__':
 	#Testing shuffling the data
 	elif model == "NB_4":
 		clf = MultinomialNB(alpha=0.01, shuffle=True)
-	#Testing with different values of and tol
+	#Testing with different values of tol
 	elif model == "NB_5":
 		clf = MultinomialNB(alpha=0.01, tol=0.001)
 	elif model == "NB_6":

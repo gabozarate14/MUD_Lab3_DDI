@@ -4,7 +4,8 @@ import sys
 from os import listdir
 from xml.dom.minidom import parse
 from deptree import *
-from util import experiments as exp
+from experiments import *
+
 
 # Function that builds the path elements using the parameters in terms of
 # lemma, relations, tags (PoS) and its combinations
@@ -123,14 +124,15 @@ def extract_features(tree, entities, e1, e2, exec_params):
         # it would depend on the desired parameters to build the path in terms of lemma,
         # relations, tags (PoS) and its combinations
         if exec_params['path']:
-            lemma = "L" in exec_params['path']
-            rel = "R" in exec_params['path']
-            tag = "T" in exec_params['path']
-            path, path1, path2 = get_path_feat(tree, tkE1, tkE2, lemma=lemma, rel=rel, tag=tag)
+            for n, path_elem in enumerate(exec_params['path']):
+                lemma = "L" in path_elem
+                rel = "R" in path_elem
+                tag = "T" in path_elem
+                path, path1, path2 = get_path_feat(tree, tkE1, tkE2, lemma=lemma, rel=rel, tag=tag)
 
-            feats.add("path1=" + path1)
-            feats.add("path2=" + path2)
-            feats.add("path=" + path)
+                feats.add(f"path1_{n}=" + path1)
+                feats.add(f"path2_{n}=" + path2)
+                feats.add(f"path_{n}=" + path)
 
         # feature that indicates the entities types
         if exec_params['ent_types']:
@@ -150,8 +152,7 @@ def extract_features(tree, entities, e1, e2, exec_params):
 ## --
 
 #Extract the feature extraction parameters from the experiments file
-ext_feat_exps = exp.ext_feat_exps
-
+ext_feat_exps = EXPERIMENTS
 
 if len(sys.argv) < 3:
     print("One parameter of execution is missing")
